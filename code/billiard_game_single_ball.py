@@ -7,8 +7,8 @@ if __name__ == "__main__":
     fps = 60
     # world space [0.0, 1.0] ^ 2
     velocity_magnitude_wc = 0.2
-    pixel_radius = 4
-    radius_wc = 1.0 / pixel_radius
+    pixel_radius = 10
+    radius_wc = 1.0 / resolution[0] * pixel_radius
 
     velocity_wc = np.random.rand(2)
     velocity_wc /= np.sqrt((velocity_wc ** 2).sum())
