@@ -12,10 +12,11 @@ if __name__ == "__main__":
 
     velocity_wc = np.random.rand(2)
     velocity_wc /= np.sqrt((velocity_wc ** 2).sum())
-    velocity_wc *= velocity_magnitude_wc / fps
+    velocity_wc *= velocity_magnitude_wc
     pos_wc = np.random.rand(2)
     gui = ti.GUI("billiard_game_single_ball", resolution)
     gui.fps_limit = fps
+    delta_t = 1.0 / fps
 
     boundary_begin = np.array([
         [0.0, 0.0],
@@ -45,6 +46,6 @@ if __name__ == "__main__":
         else:
             velocity_wc[1] *= -1
 
-        pos_wc += velocity_wc
+        pos_wc += velocity_wc * delta_t
         pos_wc = np.minimum(1.0 - radius_wc, pos_wc)
         pos_wc = np.maximum(radius_wc, pos_wc)
