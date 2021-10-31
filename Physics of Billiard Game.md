@@ -93,3 +93,85 @@ At current time step, we can:
 ##### Velocity “Underflow”
 
 When the velocity is too small, the position does not change a lot, then when we display the ball, the ball stays at the same pixels. In this case, we need to introduce a world space, which is mentioned above, with higher precisions than the screen space and do the arithmetics in the world space.
+
+## Two Ball Collision
+
+Suppose we have two balls A and B, and they have positions and velocities as 
+$$
+\vec{p}_{A,t}\\
+\vec{p}_{B,t}\\
+\vec{v}_{A,\vec{p},t}\\
+\vec{v}_{B,\vec{p},t}
+$$
+And we have a world coordinates for the above vectors.
+
+![coordinate](coordinate.svg)
+
+With the derivation in [The physics of Billiards](https://www.real-world-physics-problems.com/physics-of-billiards.html), we know that if a moving billiard collides with another stationary billiard, the stationary one will move along the direction of the connection of two centroids, and the collider will move in a direction perpendicular to that direction. 
+
+However, we need to calculate velocities in the case where two billiards both have velocities. So, we introduce a local frame, in which a billiard’s centroid is the origin. Then in the local frame, the billiard at the origin is stationary, and thus we can calculate everything in this frame with the same stationary assumption.
+
+Suppose we set A as the reference of the local frame, then we have
+$$
+\vec{v}_{A,t,local} = 0\\
+\vec{v}_{B,t,local} = \vec{v}_{B,t} - \vec{v}_{A,t}\\
+\vec{p}_{A,t,local} = 0\\
+\vec{p}_{B,t,local} = \vec{p}_{B,t} - \vec{v}_{A,t}
+$$
+, then we calculate velocities after a collision in this frame and convert the results back to the world coordinate.
+
+The directions are easy to compute if we extend the dimension to 3D. We can use cross products to find out the direction of velocity of the collider (which is B here) after the collision.
+
+Once we have the directions of after-collision velocities, we can calculate the magnitudes by solving a linear system.
+
+Suppose the magnitudes are $\alpha$ and $\beta$, and the directions are $\vec{d}_A$ and $\vec{d}_B$.
+
+By the conservation law of momentum, we have
+$$
+\vec{v}_{A,t,local} + \vec{v}_{B,t,local} = \alpha\vec{d}_A+\beta\vec{d}_B
+$$
+Let the momentum to be$ [x, y]^T$.
+
+Rewriting the above equation, we get
+$$
+\begin{equation*}
+\begin{bmatrix}
+d_A[x] & d_B[x]\\
+d_A[y] & d_B[y]
+\end{bmatrix}
+\begin{bmatrix}
+\alpha\\
+\beta
+\end{bmatrix}=\begin{bmatrix}
+x\\
+y
+\end{bmatrix}
+\end{equation*}
+$$
+Since $\vec{d}_A$ and $\vec{d}_B$ are unit vectors and orthogonal to each other, the inverse of the above matrix is its transpose. So, we can calculate the magnitudes like
+$$
+\begin{equation*}
+\begin{bmatrix}
+\alpha\\
+\beta
+\end{bmatrix}=
+\begin{bmatrix}
+d_A[x] & d_A[y]\\
+d_B[x] & d_B[y]
+\end{bmatrix}
+\begin{bmatrix}
+x\\
+y
+\end{bmatrix}
+\end{equation*}
+$$
+Once we have the magnitudes and directions, we get velocities in the local frame, then we only need to convert them into the world coordinate.
+
+### Technical issues
+
+* We need some complex operators:
+    * Division
+    * Square root
+    * Multiplication
+* Two balls may overlap, which is “solved” in the code `rectify_positions_in_collision()`
+
