@@ -34,10 +34,6 @@ if __name__ == "__main__":
                 ball_i_pos_wc = np.random.rand(2) * span + offset
         ball_pos_wc[i] = ball_i_pos_wc
 
-    cue_ball_velocity_wc, _ = normalize_vector(np.random.rand(2))
-    cue_ball_velocity_wc *= cue_ball_velocity_magnitude_wc
-    ball_velocities_wc[CUE_BALL_IDX] = cue_ball_velocity_wc
-
     gui = ti.GUI("billiard_game_multi_ball", resolution)
     gui.fps_limit = fps
     delta_t = 1.0 / fps
@@ -63,11 +59,12 @@ if __name__ == "__main__":
         hit_ball = gui.get_event(ti.GUI.PRESS) and gui.is_pressed("a")
         cue_ball_pos = ball_pos_wc[CUE_BALL_IDX]
         if np.allclose((ball_velocities_wc ** 2).sum(-1), 0., rtol=0.001, atol=0.001):
-            rod_dir, _ = normalize_vector(cue_ball_pos - gui.get_cursor_pos())
-            rod_line = rod_dir * rod_length
+            rod_dir, length = normalize_vector(cue_ball_pos - gui.get_cursor_pos())
+            rod_line = rod_dir * min(rod_length, length)
             gui.line(cue_ball_pos, cue_ball_pos - rod_line, radius=2)
             if hit_ball:
-                ball_velocities_wc[CUE_BALL_IDX] = rod_dir * cue_ball_velocity_magnitude_wc
+                ball_velocities_wc[CUE_BALL_IDX] = rod_dir * cue_ball_velocity_magnitude_wc \
+                                                   * (min(rod_length, length) / rod_length)
         gui.lines(begin=boundary_begin, end=boundary_end, radius=2)
         gui.circle(cue_ball_pos, radius=ball_pixel_radius, color=0xFF0000)
         gui.circles(ball_pos_wc[CUE_BALL_IDX + 1:], radius=ball_pixel_radius)
