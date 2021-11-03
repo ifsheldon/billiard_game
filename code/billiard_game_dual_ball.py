@@ -2,8 +2,7 @@ import taichi as ti
 import numpy as np
 from billiard_game_single_ball import rectify_positions_and_velocities
 
-g = 9.8
-drag_coefficient = 0.0001
+EPS = 1e-5
 
 
 def normalize_vector(vector):
@@ -14,7 +13,7 @@ def normalize_vector(vector):
         return vector / length, length
 
 
-def calc_next_pos_and_velocity(pos_wc, velocity_wc, delta_t):
+def calc_next_pos_and_velocity(pos_wc, velocity_wc, delta_t, drag_coefficient, g):
     speed = np.sqrt((velocity_wc ** 2).sum())
     if np.isclose(speed, 0.0):
         next_pos_wc = pos_wc
@@ -40,7 +39,7 @@ def rectify_positions_in_collision(ball1_pos, ball2_pos, radius):
     Avoid multiple fake collision when both ball have overlap before collision and low speed after collision
     """
     collide_direction, length = normalize_vector(ball1_pos - ball2_pos)
-    diff = 2 * radius - length
+    diff = 2 * radius - length + EPS
     rectified_ball1_pos = ball1_pos + diff / 2. * collide_direction
     rectified_ball2_pos = ball2_pos - diff / 2. * collide_direction
     return rectified_ball1_pos, rectified_ball2_pos
@@ -81,6 +80,9 @@ if __name__ == "__main__":
     resolution = (500, 500)
     fps = 60
 
+    g = 9.8
+    drag_coefficient = 0.0001
+
     # world space [0.0, 1.0] ^ 2
     cue_ball_velocity_magnitude_wc = 1.0
     ball_pixel_radius = 10
@@ -119,7 +121,7 @@ if __name__ == "__main__":
         gui.circle(ball_pos_wc, radius=ball_pixel_radius)
         gui.show()
         cue_ball_pos_wc, cue_ball_velocity_wc = calc_next_pos_and_velocity(cue_ball_pos_wc, cue_ball_velocity_wc,
-                                                                           delta_t)
+                                                                           delta_t, drag_coefficient, g)
         cue_ball_pos_wc, cue_ball_velocity_wc = rectify_positions_and_velocities(virtual_bound_x[0], virtual_bound_x[1],
                                                                                  virtual_bound_y[0], virtual_bound_y[1],
                                                                                  cue_ball_pos_wc,
