@@ -12,6 +12,7 @@ if __name__ == "__main__":
     resolution = (500, 500)
     fps = 60
     CUE_BALL_IDX = 0
+    rod_length = 0.1
 
     # world space [0.0, 1.0] ^ 2
     cue_ball_velocity_magnitude_wc = 1.0
@@ -59,8 +60,16 @@ if __name__ == "__main__":
                          virtual_bound_y[0], virtual_bound_y[1])
     ball_pairs = list(combinations(range(num_balls), 2))
     while gui.running:
+        hit_ball = gui.get_event(ti.GUI.PRESS) and gui.is_pressed("a")
+        cue_ball_pos = ball_pos_wc[CUE_BALL_IDX]
+        if np.allclose((ball_velocities_wc ** 2).sum(-1), 0., rtol=0.001, atol=0.001):
+            rod_dir, _ = normalize_vector(cue_ball_pos - gui.get_cursor_pos())
+            rod_line = rod_dir * rod_length
+            gui.line(cue_ball_pos, cue_ball_pos - rod_line, radius=2)
+            if hit_ball:
+                ball_velocities_wc[CUE_BALL_IDX] = rod_dir * cue_ball_velocity_magnitude_wc
         gui.lines(begin=boundary_begin, end=boundary_end, radius=2)
-        gui.circle(ball_pos_wc[CUE_BALL_IDX], radius=ball_pixel_radius, color=0xFF0000)
+        gui.circle(cue_ball_pos, radius=ball_pixel_radius, color=0xFF0000)
         gui.circles(ball_pos_wc[CUE_BALL_IDX + 1:], radius=ball_pixel_radius)
         gui.show()
 
