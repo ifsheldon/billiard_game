@@ -57,6 +57,7 @@ if __name__ == "__main__":
     rectify_pv = partial(rectify_positions_and_velocities,
                          virtual_bound_x[0], virtual_bound_x[1],
                          virtual_bound_y[0], virtual_bound_y[1])
+    ball_pairs = list(combinations(range(num_balls), 2))
     while gui.running:
         gui.lines(begin=boundary_begin, end=boundary_end, radius=2)
         gui.circle(ball_pos_wc[CUE_BALL_IDX], radius=ball_pixel_radius, color=0xFF0000)
@@ -70,7 +71,7 @@ if __name__ == "__main__":
             ball_pos_wc[i] = next_pos
             ball_velocities_wc[i] = next_velocity
 
-        for ball_i, ball_j in combinations(range(num_balls), 2):
+        for ball_i, ball_j in ball_pairs:
             ball_i_pos_wc = ball_pos_wc[ball_i]
             ball_j_pos_wc = ball_pos_wc[ball_j]
             if two_ball_collides(ball_i_pos_wc, ball_j_pos_wc, ball_radius_wc):
