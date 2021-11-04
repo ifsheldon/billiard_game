@@ -7,7 +7,7 @@ from billiard_game_dual_ball import normalize_vector, two_ball_collides, calc_ne
     calc_after_collision_velocity, rectify_positions_in_collision, rectify_positions_and_velocities
 
 if __name__ == "__main__":
-    num_balls = 10
+    num_balls = 11
     ti.init(ti.cpu)
     resolution = (500, 500)
     fps = 60
@@ -57,8 +57,9 @@ if __name__ == "__main__":
     ball_pairs = list(combinations(range(num_balls), 2))
     ball_color_indices = np.ones(num_balls)
     ball_color_indices[CUE_BALL_IDX] = 0
-    ball_colors = [0xFF0000, 0xFFFFFF]
+    ball_colors = [0xFFFFFF, 0xFF0000]
     while gui.running:
+        gui.clear(0x00FF00)
         hit_ball = gui.get_event(ti.GUI.PRESS) and gui.is_pressed("a")
         cue_ball_pos = ball_pos_wc[CUE_BALL_IDX]
         if np.allclose((ball_velocities_wc ** 2).sum(-1), 0., rtol=0.001, atol=0.001):
