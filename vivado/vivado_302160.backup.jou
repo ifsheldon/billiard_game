@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2019.1 (64-bit)
+# SW Build 2552052 on Fri May 24 14:47:09 MDT 2019
+# IP Build 2548770 on Fri May 24 18:01:18 MDT 2019
+# Start of session at: Thu Nov  4 14:51:25 2021
+# Process ID: 302160
+# Current directory: /home/uzahid/workspace/billiard_game/vivado
+# Command line: vivado -mode batch -notrace -source ./scripts/make-vivado-proj.tcl
+# Log file: /home/uzahid/workspace/billiard_game/vivado/vivado.log
+# Journal file: /home/uzahid/workspace/billiard_game/vivado/vivado.jou
+#-----------------------------------------------------------
+source ./scripts/make-vivado-proj.tcl -notrace
