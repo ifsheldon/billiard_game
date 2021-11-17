@@ -22,6 +22,8 @@ if __name__ == "__main__":
     fps = 60
     CUE_BALL_IDX = 0
     rod_length = 0.1
+    drag_coefficient = 0.03
+    g = 9.8
 
     # wc for world space x[0.0, ratio],  y[0.0, 1.0]
     # sc for screen space [0.0, 1.0]^2
@@ -94,7 +96,7 @@ if __name__ == "__main__":
 
         for i in range(num_balls):
             next_pos_wc, next_velocity_wc = calc_next_pos_and_velocity(ball_pos_wc[i], ball_velocities_wc[i],
-                                                                       delta_t, drag_coefficient=0.01, g=9.8)
+                                                                       delta_t, drag_coefficient, g)
             next_pos_wc, next_velocity_wc = rectify_pv(next_pos_wc, next_velocity_wc)
             ball_pos_wc[i] = next_pos_wc
             ball_velocities_wc[i] = next_velocity_wc
