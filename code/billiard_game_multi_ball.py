@@ -6,6 +6,14 @@ from itertools import combinations
 from billiard_game_dual_ball import normalize_vector, two_ball_collides, calc_next_pos_and_velocity, \
     calc_after_collision_velocity, rectify_positions_in_collision, rectify_positions_and_velocities
 
+
+def score(ball_pos, ball_velocity):
+    speed_sqr = (ball_velocity ** 2).sum(-1)
+    SPEED_LOWER_BOUND = 0.05 ** 2
+    ball_pos_x = ball_pos[:, 0]
+    ball_pos_y = ball_pos[:, 1]
+
+
 if __name__ == "__main__":
     num_balls = 11
     ti.init(ti.cpu)
@@ -71,9 +79,9 @@ if __name__ == "__main__":
         hit_ball = gui.get_event(ti.GUI.PRESS) and gui.is_pressed("a")
         cue_ball_pos_sc = ball_pos_wc[CUE_BALL_IDX] * wc_to_sc_multiplier
         if np.allclose((ball_velocities_wc ** 2).sum(-1), 0., rtol=0.001, atol=0.001):
-            rod_dir_sc, length = normalize_vector(cue_ball_pos_sc - gui.get_cursor_pos())
+            rod_dir_sc, length = normalize_vector(gui.get_cursor_pos() - cue_ball_pos_sc)
             rod_line = rod_dir_sc * min(rod_length, length)
-            gui.line(cue_ball_pos_sc, cue_ball_pos_sc - rod_line, radius=2)
+            gui.line(cue_ball_pos_sc, cue_ball_pos_sc + rod_line, radius=2)
             if hit_ball:
                 ball_velocities_wc[CUE_BALL_IDX] = (rod_dir_sc * sc_to_wc_multiplier) * cue_ball_velocity_magnitude_wc \
                                                    * (min(rod_length, length) / rod_length)
