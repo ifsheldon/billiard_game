@@ -9,18 +9,26 @@ from billiard_game_dual_ball import normalize_vector, two_ball_collides, calc_ne
 if __name__ == "__main__":
     num_balls = 11
     ti.init(ti.cpu)
-    resolution = (500, 500)
+    resolution = (1280, 800)
+    ratio = resolution[0] / resolution[1]  # x/y
     fps = 60
     CUE_BALL_IDX = 0
     rod_length = 0.1
 
-    # world space [0.0, 1.0] ^ 2
+    # wc for world space x[0.0, ratio],  y[0.0, 1.0]
+    # sc for screen space [0.0, 1.0]^2
     cue_ball_velocity_magnitude_wc = 1.0
     ball_pixel_radius = 10
-    ball_radius_wc = 1.0 / resolution[0] * ball_pixel_radius
+    ball_radius_wc = 1.0 / resolution[1] * ball_pixel_radius
+    x_begin = 0.0
+    x_end = ratio
+    y_begin = 0.0
+    y_end = 1.0
+    wc_to_sc_multiplier = np.array([1 / ratio, 1])  # transform to [0,1]^ screen space
+    sc_to_wc_multiplier = np.array([ratio, 1])
 
-    virtual_bound_x = np.array([ball_radius_wc, 1.0 - ball_radius_wc])
-    virtual_bound_y = np.array([ball_radius_wc, 1.0 - ball_radius_wc])
+    virtual_bound_x = np.array([ball_radius_wc, x_end - ball_radius_wc])
+    virtual_bound_y = np.array([ball_radius_wc, y_end - ball_radius_wc])
 
     ball_pos_wc = np.zeros((num_balls, 2))
     ball_velocities_wc = np.zeros((num_balls, 2))
@@ -39,17 +47,17 @@ if __name__ == "__main__":
     delta_t = 1.0 / fps
 
     boundary_begin = np.array([
-        [0.0, 0.0],
-        [0.0, 0.0],
-        [1.0, 1.0],
-        [1.0, 1.0]
+        [x_begin, y_begin],
+        [x_begin, y_begin],
+        [x_end, y_end],
+        [x_end, y_end]
     ])
 
     boundary_end = np.array([
-        [1.0, 0.0],
-        [0.0, 1.0],
-        [1.0, 0.0],
-        [0.0, 1.0]
+        [x_end, y_begin],
+        [x_begin, y_end],
+        [x_end, y_begin],
+        [x_begin, y_end]
     ])
     rectify_pv = partial(rectify_positions_and_velocities,
                          virtual_bound_x[0], virtual_bound_x[1],
@@ -61,24 +69,27 @@ if __name__ == "__main__":
     while gui.running:
         gui.clear(0x00FF00)
         hit_ball = gui.get_event(ti.GUI.PRESS) and gui.is_pressed("a")
-        cue_ball_pos = ball_pos_wc[CUE_BALL_IDX]
+        cue_ball_pos_sc = ball_pos_wc[CUE_BALL_IDX] * wc_to_sc_multiplier
         if np.allclose((ball_velocities_wc ** 2).sum(-1), 0., rtol=0.001, atol=0.001):
-            rod_dir, length = normalize_vector(cue_ball_pos - gui.get_cursor_pos())
-            rod_line = rod_dir * min(rod_length, length)
-            gui.line(cue_ball_pos, cue_ball_pos - rod_line, radius=2)
+            rod_dir_sc, length = normalize_vector(cue_ball_pos_sc - gui.get_cursor_pos())
+            rod_line = rod_dir_sc * min(rod_length, length)
+            gui.line(cue_ball_pos_sc, cue_ball_pos_sc - rod_line, radius=2)
             if hit_ball:
-                ball_velocities_wc[CUE_BALL_IDX] = rod_dir * cue_ball_velocity_magnitude_wc \
+                ball_velocities_wc[CUE_BALL_IDX] = (rod_dir_sc * sc_to_wc_multiplier) * cue_ball_velocity_magnitude_wc \
                                                    * (min(rod_length, length) / rod_length)
         gui.lines(begin=boundary_begin, end=boundary_end, radius=2)
-        gui.circles(ball_pos_wc, radius=ball_pixel_radius, palette=ball_colors, palette_indices=ball_color_indices)
+        gui.circles(ball_pos_wc * wc_to_sc_multiplier.reshape(1, 2),
+                    radius=ball_pixel_radius,
+                    palette=ball_colors,
+                    palette_indices=ball_color_indices)
         gui.show()
 
         for i in range(num_balls):
-            next_pos, next_velocity = calc_next_pos_and_velocity(ball_pos_wc[i], ball_velocities_wc[i],
-                                                                 delta_t, drag_coefficient=0.01, g=9.8)
-            next_pos, next_velocity = rectify_pv(next_pos, next_velocity)
-            ball_pos_wc[i] = next_pos
-            ball_velocities_wc[i] = next_velocity
+            next_pos_wc, next_velocity_wc = calc_next_pos_and_velocity(ball_pos_wc[i], ball_velocities_wc[i],
+                                                                       delta_t, drag_coefficient=0.01, g=9.8)
+            next_pos_wc, next_velocity_wc = rectify_pv(next_pos_wc, next_velocity_wc)
+            ball_pos_wc[i] = next_pos_wc
+            ball_velocities_wc[i] = next_velocity_wc
 
         for ball_i, ball_j in ball_pairs:
             ball_i_pos_wc = ball_pos_wc[ball_i]
