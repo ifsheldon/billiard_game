@@ -30,44 +30,44 @@ if __name__ == "__main__":
     cue_ball_velocity_magnitude_wc = 1.0
     ball_pixel_radius = 10
     ball_radius_wc = 1.0 / resolution[1] * ball_pixel_radius
-    x_begin = 0.0
-    x_end = ratio
-    y_begin = 0.0
-    y_end = 1.0
+    x_begin_wc = 0.0
+    x_end_wc = ratio
+    y_begin_wc = 0.0
+    y_end_wc = 1.0
     wc_to_sc_multiplier = np.array([1 / ratio, 1])  # transform to [0,1]^ screen space
     sc_to_wc_multiplier = np.array([ratio, 1])
 
-    virtual_bound_x = np.array([ball_radius_wc, x_end - ball_radius_wc])
-    virtual_bound_y = np.array([ball_radius_wc, y_end - ball_radius_wc])
+    virtual_bound_x = np.array([ball_radius_wc, x_end_wc - ball_radius_wc])
+    virtual_bound_y = np.array([ball_radius_wc, y_end_wc - ball_radius_wc])
 
     ball_pos_wc = np.zeros((num_balls, 2))
     ball_velocities_wc = np.zeros((num_balls, 2))
 
-    span = np.array([virtual_bound_x[1] - virtual_bound_x[0], virtual_bound_y[1] - virtual_bound_y[0]])
-    offset = np.array([virtual_bound_x[0], virtual_bound_y[0]])
+    span_wc = np.array([virtual_bound_x[1] - virtual_bound_x[0], virtual_bound_y[1] - virtual_bound_y[0]])
+    offset_wc = np.array([virtual_bound_x[0], virtual_bound_y[0]])
     for i in range(num_balls):
-        ball_i_pos_wc = np.random.rand(2) * span + offset
+        ball_i_pos_wc = np.random.rand(2) * span_wc + offset_wc
         if i != CUE_BALL_IDX:
             while two_ball_collides(ball_pos_wc[CUE_BALL_IDX], ball_i_pos_wc, ball_radius_wc):
-                ball_i_pos_wc = np.random.rand(2) * span + offset
+                ball_i_pos_wc = np.random.rand(2) * span_wc + offset_wc
         ball_pos_wc[i] = ball_i_pos_wc
 
     gui = ti.GUI("billiard_game_multi_ball", resolution)
     gui.fps_limit = fps
     delta_t = 1.0 / fps
 
-    boundary_begin = np.array([
-        [x_begin, y_begin],
-        [x_begin, y_begin],
-        [x_end, y_end],
-        [x_end, y_end]
+    boundary_begin_wc = np.array([
+        [x_begin_wc, y_begin_wc],
+        [x_begin_wc, y_begin_wc],
+        [x_end_wc, y_end_wc],
+        [x_end_wc, y_end_wc]
     ])
 
-    boundary_end = np.array([
-        [x_end, y_begin],
-        [x_begin, y_end],
-        [x_end, y_begin],
-        [x_begin, y_end]
+    boundary_end_wc = np.array([
+        [x_end_wc, y_begin_wc],
+        [x_begin_wc, y_end_wc],
+        [x_end_wc, y_begin_wc],
+        [x_begin_wc, y_end_wc]
     ])
     rectify_pv = partial(rectify_positions_and_velocities,
                          virtual_bound_x[0], virtual_bound_x[1],
@@ -87,7 +87,7 @@ if __name__ == "__main__":
             if hit_ball:
                 ball_velocities_wc[CUE_BALL_IDX] = (rod_dir_sc * sc_to_wc_multiplier) * cue_ball_velocity_magnitude_wc \
                                                    * (min(rod_length, length) / rod_length)
-        gui.lines(begin=boundary_begin, end=boundary_end, radius=2)
+        gui.lines(begin=boundary_begin_wc, end=boundary_end_wc, radius=2)
         gui.circles(ball_pos_wc * wc_to_sc_multiplier.reshape(1, 2),
                     radius=ball_pixel_radius,
                     palette=ball_colors,
