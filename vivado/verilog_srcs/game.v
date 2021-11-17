@@ -73,11 +73,13 @@ module drawcon(
 endmodule
 
 
-module game_top(
-    input clk, rst,
-    input [4:0] sw,
+module game(
+    input clk,
+    // input [4:0] sw,
     input [11:0] col_sw,
     output [3:0] pix_r, pix_g, pix_b,
+    input [11:0] blkpos_x,
+    input [11:0] blkpos_y,
     output hsync, vsync
     );
     
@@ -91,52 +93,52 @@ module game_top(
     wire [3:0] r, g, b;
     wire [10:0] curr_x;
     wire [9:0] curr_y;
-    reg  [10:0] blkpos_x = 11'd639;
-    reg  [9:0] blkpos_y = 10'd399;
+    // reg  [10:0] blkpos_x = 11'd639;
+    // reg  [9:0] blkpos_y = 10'd399;
     
-    drawcon draw_module(.col_sw(col_sw), .blkpos_x(blkpos_x), .curr_x(curr_x), .blkpos_y(blkpos_y), 
+    drawcon draw_module(.col_sw(col_sw), .blkpos_x(blkpos_x[10:0]), .curr_x(curr_x), .blkpos_y(blkpos_y[9:0]), 
                         .curr_y(curr_y), .r(r), .g(g), .b(b));
     
-    vga_out vga_controller(.clk(clk), .rst(rst), .draw_r(r), .draw_g(g), .draw_b(b), .pix_r(pix_r), .pix_g(pix_g), 
+    vga_out vga_controller(.clk(clk), .draw_r(r), .draw_g(g), .draw_b(b), .pix_r(pix_r), .pix_g(pix_g), 
                            .pix_b(pix_b), .hsync(hsync), .vsync(vsync), .curr_x(curr_x), .curr_y(curr_y));
         
     
-    always@(negedge slow_clk) begin
-        case (sw)
-            5'd0 : begin end
-            5'd1 : begin
-                blkpos_x <= 11'd639;
-                blkpos_y <= 10'd399;
-            end
-            // going to right
-            5'd2 : begin
-                if (blkpos_x < 11'd1237)
-                    blkpos_x <= blkpos_x + 11'd5;
-            end        
-            // going up
-            5'd4 : begin
-                if(blkpos_y > 10'd10)
-                    blkpos_y <= blkpos_y - 10'd5;
-            end
-            // going left
-            5'd8 : begin
-                if (blkpos_x > 11'd10)
-                    blkpos_x <= blkpos_x - 11'd5;
-            end
-            // giong down
-            5'd16 : begin
-                if (blkpos_y < 10'd757)
-                    blkpos_y <= blkpos_y + 10'd5;
-            end
+    // always@(negedge slow_clk) begin
+    //     case (sw)
+    //         5'd0 : begin end
+    //         5'd1 : begin
+    //             blkpos_x <= 11'd639;
+    //             blkpos_y <= 10'd399;
+    //         end
+    //         // going to right
+    //         5'd2 : begin
+    //             if (blkpos_x < 11'd1237)
+    //                 blkpos_x <= blkpos_x + 11'd5;
+    //         end        
+    //         // going up
+    //         5'd4 : begin
+    //             if(blkpos_y > 10'd10)
+    //                 blkpos_y <= blkpos_y - 10'd5;
+    //         end
+    //         // going left
+    //         5'd8 : begin
+    //             if (blkpos_x > 11'd10)
+    //                 blkpos_x <= blkpos_x - 11'd5;
+    //         end
+    //         // giong down
+    //         5'd16 : begin
+    //             if (blkpos_y < 10'd757)
+    //                 blkpos_y <= blkpos_y + 10'd5;
+    //         end
                         
-            default: begin
-                blkpos_x <= 11'd639;
-                blkpos_y <= 10'd399;                
-            end
+    //         default: begin
+    //             blkpos_x <= 11'd639;
+    //             blkpos_y <= 10'd399;                
+    //         end
         
-        endcase
+    //     endcase
     
-    end        
+    // end        
        
     
     

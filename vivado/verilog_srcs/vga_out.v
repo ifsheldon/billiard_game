@@ -22,7 +22,7 @@
 
 module vga_out(
     
-    input clk, rst,
+    input clk,
     input [3:0] draw_r, draw_g, draw_b,
     
     output [3:0] pix_r, pix_g, pix_b,
