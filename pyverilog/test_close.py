@@ -1,4 +1,5 @@
 import pyverilator
+# run the below tests with pytest
 
 
 def test_scalar_close():
