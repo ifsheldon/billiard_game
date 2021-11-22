@@ -1,85 +1,12 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 28.10.2021 00:41:25
-// Design Name: 
-// Module Name: game_top
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
-module drawcon(
-    input [10:0] blkpos_x, curr_x,
-    input  [9:0] blkpos_y, curr_y,
-    input [11:0] col_sw,
-    output [3:0] r, g, b
-    );
-    
-    reg [3:0] bg_r = 4'd0;
-    reg [3:0] bg_g = 4'd15;
-    reg [3:0] bg_b = 4'd0;
-    
-    reg [3:0] blk_r = 4'd15;
-    reg [3:0] blk_g = 4'd0;
-    reg [3:0] blk_b = 4'd0;
-    
-    
-    reg [3:0] r_output = 4'd0;
-    reg [3:0] g_output = 4'd0;
-    reg [3:0] b_output = 4'd0;
-
-    reg ballsprite [0:961];
-    reg val;
-    initial
-    begin
-        $readmemb("./ballsprite.txt", ballsprite, 0, 961);
-    end
-    
-    
-    always @* 
-        {blk_r, blk_g, blk_b} = {col_sw[11:8], col_sw[7:4], col_sw[3:0]};
-    
-    // add black border and draw shape (rectangle 32x32)
-    always @* begin
-        // add black borders
-        if (curr_x < 11'd10 || curr_x >= 11'd1269 || curr_y < 10'd10 || curr_y >= 10'd789)
-            {r_output, g_output, b_output} = {4'd0, 4'd0, 4'd0};
-        // add shape
-        else if (curr_y >= blkpos_y && curr_y < blkpos_y+10'd31 && curr_x >= blkpos_x && curr_x <= blkpos_x+11'd31)
-        begin
-            if (ballsprite[(curr_y-blkpos_y)*5'd31+(curr_x-blkpos_x)])
-                {r_output, g_output, b_output} = {blk_r, blk_g, blk_b};
-            else
-                {r_output, g_output, b_output} = {bg_r, bg_g, bg_b};
-        end
-        else
-            {r_output, g_output, b_output} = {bg_r, bg_g, bg_b};    
-    end    
-    assign {r,g,b} = {r_output, g_output, b_output};
-    
-    
-endmodule
-
 
 module game(
-    input clk,
+    input clk,rst, left_click, right_click,
     // input [4:0] sw,
     input [11:0] col_sw,
+    input [11:0] pointer_x, pointer_y,
+    
     output [3:0] pix_r, pix_g, pix_b,
-    input [11:0] blkpos_x,
-    input [11:0] blkpos_y,
     output hsync, vsync
     );
     
@@ -91,16 +18,72 @@ module game(
     assign slow_clk = clk_count[19]; // 80hz clock
     
     wire [3:0] r, g, b;
-    wire [10:0] curr_x;
-    wire [9:0] curr_y;
-    // reg  [10:0] blkpos_x = 11'd639;
-    // reg  [9:0] blkpos_y = 10'd399;
+    wire [10:0] curr_x, cue_ball_x, red_ball1_x;
+    wire [9:0]  curr_y, cue_ball_y, red_ball1_y;
+    wire cue_ball_disp, red_ball1_disp;
     
-    drawcon draw_module(.col_sw(col_sw), .blkpos_x(blkpos_x[10:0]), .curr_x(curr_x), .blkpos_y(blkpos_y[9:0]), 
-                        .curr_y(curr_y), .r(r), .g(g), .b(b));
+    game_cpu Inst_game_cpu (
+                            // inputs
+                            .clk(clk),
+                            .rst(rst),
+                            
+                            .left_click(left_click),
+                            .right_click(right_click),
+                            
+                            .pointer_x(pointer_x),
+                            .pointer_y(pointer_y),
+                            
+                            // outputs
+                            .cue_ball_x(cue_ball_x),
+                            .cue_ball_y(cue_ball_y),
+                            .cue_ball_disp(cue_ball_disp),
+                            
+                            .red_ball1_x(red_ball1_x),
+                            .red_ball1_y(red_ball1_y),
+                            .red_ball1_disp(red_ball1_disp)
+                           );
     
-    vga_out vga_controller(.clk(clk), .draw_r(r), .draw_g(g), .draw_b(b), .pix_r(pix_r), .pix_g(pix_g), 
-                           .pix_b(pix_b), .hsync(hsync), .vsync(vsync), .curr_x(curr_x), .curr_y(curr_y));
+    
+    
+    render_engine Inst_render_engine(
+                                     // inputs
+                                     .col_sw(col_sw), 
+                                     
+                                     .curr_x(curr_x),
+                                     .curr_y(curr_y),
+                                     
+                                     .pointer_x(pointer_x[10:0]),  
+                                     .pointer_y(pointer_y[9:0]), 
+
+                                     .cue_ball_x(cue_ball_x),
+                                     .cue_ball_y(cue_ball_y),
+                                     .cue_ball_disp(cue_ball_disp),
+                                     
+                                     .red_ball1_x(red_ball1_x),
+                                     .red_ball1_y(red_ball1_y),
+                                     .red_ball1_disp(red_ball1_disp),
+
+                                     // outputs
+                                     .r(r), 
+                                     .g(g), 
+                                     .b(b)
+                                     );
+    
+    vga_out Inst_vga_out(
+                         .clk(clk), 
+                         .draw_r(r), 
+                         .draw_g(g), 
+                         .draw_b(b), 
+                    
+                         .pix_r(pix_r), 
+                         .pix_g(pix_g), 
+                         .pix_b(pix_b), 
+                         .hsync(hsync), 
+                         .vsync(vsync), 
+                    
+                         .curr_x(curr_x), 
+                         .curr_y(curr_y)
+                         );
         
     
     // always@(negedge slow_clk) begin

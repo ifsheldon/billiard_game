@@ -89,9 +89,13 @@ END COMPONENT;
 COMPONENT game is
 PORT (
     clk      : in std_logic;
+    rst      : in std_logic;
+    left_click : in std_logic;
+    right_click : in std_logic;
+        
     col_sw   : in std_logic_vector(11 downto 0);    
-    blkpos_x : in std_logic_vector(11 downto 0);
-    blkpos_y : in std_logic_vector(11 downto 0);
+    pointer_x : in std_logic_vector(11 downto 0);
+    pointer_y : in std_logic_vector(11 downto 0);
     
     hsync    : out std_logic;
     vsync    : out std_logic;
@@ -101,11 +105,13 @@ PORT (
 );
 END COMPONENT;
 
-
+signal clk_83MHz  : std_logic;
 signal rst        : std_logic;
+
+signal left_click : std_logic;
+signal right_click: std_logic;
 signal MOUSE_X_POS: std_logic_vector (11 downto 0);
 signal MOUSE_Y_POS: std_logic_vector (11 downto 0);
-signal clk_83MHz  : std_logic;
 
 -- ===============================================  ARCH BEHAV =======================================
 
@@ -119,7 +125,7 @@ begin
    Inst_clk_wiz_0: clk_wiz_0
    port map (
       clk_100MHz_i   => clk_i,
-      clk_83MHz_o   => clk_83MHz
+      clk_83MHz_o    => clk_83MHz
       );
 
 
@@ -134,9 +140,9 @@ begin
       xpos           => MOUSE_X_POS,
       ypos           => MOUSE_Y_POS,
       zpos           => open,
-      left           => open,
+      left           => left_click,
       middle         => open,
-      right          => open,
+      right          => right_click,
       new_event      => open,
       value          => x"000",
       setx           => '0',
@@ -153,17 +159,17 @@ begin
 
    Inst_sSeg: sSeg
    port map(
-        clk => clk_i,
-        numx => MOUSE_X_POS,
-        numy => MOUSE_Y_POS,
-        a => a,
-        b => b,
-        c => c,
-        d => d,
-        e => e,
-        f => f,
-        g => g,
-        an => an   
+        clk     => clk_i,
+        numx    => MOUSE_X_POS,
+        numy    => MOUSE_Y_POS,
+        a       => a,
+        b       => b,
+        c       => c,
+        d       => d,
+        e       => e,
+        f       => f,
+        g       => g,
+        an      => an   
     );
 
 ----------------------------------------------------------------------------------
@@ -172,17 +178,20 @@ begin
  
    Inst_game: game
    port map(
-        clk => clk_83MHz,
-        col_sw => col_sw,
+        clk         => clk_83MHz,
+        rst         => rst,
+        left_click  => left_click,
+        right_click => right_click,
+        col_sw      => col_sw,
         
-        blkpos_x => MOUSE_X_POS,
-        blkpos_y => MOUSE_Y_POS,
+        pointer_x    => MOUSE_X_POS,
+        pointer_y    => MOUSE_Y_POS,
         
-        hsync => hsync,
-        vsync => vsync,
-        pix_r => pix_r,
-        pix_g => pix_g,
-        pix_b => pix_b
+        hsync       => hsync,
+        vsync       => vsync,
+        pix_r       => pix_r,
+        pix_g       => pix_g,
+        pix_b       => pix_b
    );
  
  

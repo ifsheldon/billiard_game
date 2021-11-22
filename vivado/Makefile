@@ -3,7 +3,7 @@
 
 .PHONY: all make_proj synth_proj
 
-all: make_proj synth_proj
+all: make_proj synth_proj prog_device
 
 master: clean_all all prog_device
 

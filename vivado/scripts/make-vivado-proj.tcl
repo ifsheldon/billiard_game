@@ -7,15 +7,19 @@ update_ip_catalog
 
 # add verilog files
 add_files -norecurse "./verilog_srcs/game.v"
-add_files -norecurse "./verilog_srcs/sevenseg.v"
 add_files -norecurse "./verilog_srcs/sSeg.v"
 add_files -norecurse "./verilog_srcs/vga_out.v"
-add_files -norecurse "./verilog_srcs/ballsprite.txt"
+add_files -norecurse "./verilog_srcs/game_cpu.v"
+add_files -norecurse "./verilog_srcs/sevenseg.v"
+add_files -norecurse "./verilog_srcs/render_engine.v"
 
 # add vhdl files
+add_files -norecurse "./vhdl_srcs/top.vhd"
 add_files -norecurse "./vhdl_srcs/MouseCtl.vhd"
 add_files -norecurse "./vhdl_srcs/Ps2Interface.vhd"
-add_files -norecurse "./vhdl_srcs/top.vhd"
+
+# add sprites
+add_files -norecurse "./verilog_srcs/ballsprite.txt"
 
 # adding constraints file
 add_files -fileset constrs_1 -norecurse "./constraints/game.xdc"
