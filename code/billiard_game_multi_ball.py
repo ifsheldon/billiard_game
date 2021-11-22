@@ -26,7 +26,7 @@ G = 9.8
 CUE_BALL_MAX_SPEED_WC = 1.0
 BALL_PIXEL_RADIUS = 10
 HOLE_PIXEL_RADIUS = 15
-num_balls = 11
+num_balls = 2
 # Derived parameters
 ball_radius_wc = BALL_PIXEL_RADIUS / RESOLUTION[1]
 hole_radius_wc = HOLE_PIXEL_RADIUS / RESOLUTION[1]

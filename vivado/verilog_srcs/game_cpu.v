@@ -11,6 +11,16 @@ module game_cpu(
     );
     
     reg [11:0] cue_ball_reg [0:2], red_ball1_reg[0:2];
+    reg [11:0] pointer_x_reg, pointer_y_reg;
+    reg left_click_reg, right_click_reg;
+    
+    always @(posedge clk) begin
+        left_click_reg <= left_click;
+        right_click_reg <= right_click;
+        pointer_x_reg <= pointer_x;
+        pointer_y_reg <= pointer_y;
+    end
+    
     initial
     begin
          cue_ball_reg[0]  = 12'd300;
@@ -31,14 +41,14 @@ module game_cpu(
             red_ball1_reg[1] <= 12'd400;
         end
         
-        else if (left_click) begin
-            cue_ball_reg[0] <= pointer_x;
-            cue_ball_reg[1] <= pointer_y;
+        else if (left_click_reg) begin
+            cue_ball_reg[0] <= pointer_x_reg;
+            cue_ball_reg[1] <= pointer_y_reg;
         end
 
-        else if (right_click) begin
-            red_ball1_reg[0] <= pointer_x;
-            red_ball1_reg[1] <= pointer_y;
+        else if (right_click_reg) begin
+            red_ball1_reg[0] <= pointer_x_reg;
+            red_ball1_reg[1] <= pointer_y_reg;
         end
 
         

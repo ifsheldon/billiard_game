@@ -9,6 +9,8 @@ entity GAME_TOP is
 
       clk_i          : in  std_logic;
       rstn_i         : in  std_logic;
+      
+      -- buttons
       col_sw         : in  std_logic_vector(11 downto 0);
       
       -- VGA display
@@ -17,11 +19,13 @@ entity GAME_TOP is
       pix_r         : out std_logic_vector(3 downto 0);
       pix_g         : out std_logic_vector(3 downto 0);
       pix_b         : out std_logic_vector(3 downto 0);
-      
-        
+             
       -- PS2 interface signals
       ps2_clk        : inout std_logic;
       ps2_data       : inout std_logic;
+  
+      -- push buttons
+      sw             : in std_logic_vector(4 downto 0);
   
       -- sSeg interface
       a              : out std_logic;
@@ -92,8 +96,9 @@ PORT (
     rst      : in std_logic;
     left_click : in std_logic;
     right_click : in std_logic;
-        
-    col_sw   : in std_logic_vector(11 downto 0);    
+    
+    sw        : in std_logic_vector(4 downto 0);         
+    col_sw    : in std_logic_vector(11 downto 0);    
     pointer_x : in std_logic_vector(11 downto 0);
     pointer_y : in std_logic_vector(11 downto 0);
     
@@ -112,6 +117,7 @@ signal left_click : std_logic;
 signal right_click: std_logic;
 signal MOUSE_X_POS: std_logic_vector (11 downto 0);
 signal MOUSE_Y_POS: std_logic_vector (11 downto 0);
+
 
 -- ===============================================  ARCH BEHAV =======================================
 
@@ -135,7 +141,7 @@ begin
    Inst_MouseCtl: MouseCtl
    PORT MAP
    (
-      clk            => clk_i,
+      clk            => clk_83MHz,
       rst            => rst,
       xpos           => MOUSE_X_POS,
       ypos           => MOUSE_Y_POS,
@@ -159,7 +165,7 @@ begin
 
    Inst_sSeg: sSeg
    port map(
-        clk     => clk_i,
+        clk     => clk_83MHz,
         numx    => MOUSE_X_POS,
         numy    => MOUSE_Y_POS,
         a       => a,
@@ -182,6 +188,7 @@ begin
         rst         => rst,
         left_click  => left_click,
         right_click => right_click,
+        sw          => sw,
         col_sw      => col_sw,
         
         pointer_x    => MOUSE_X_POS,
