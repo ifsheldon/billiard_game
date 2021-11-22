@@ -14,7 +14,7 @@ def normalize_vector(vector):
 
 
 def calc_next_pos_and_velocity(pos_wc, velocity_wc, delta_t, drag_coefficient, g):
-    speed = np.sqrt((velocity_wc ** 2).sum())
+    speed = np.sqrt((velocity_wc ** 2).sum())  # can use normalize_vector instead
     if np.isclose(speed, 0.0):
         next_pos_wc = pos_wc
         velocity_wc_next = np.zeros_like(velocity_wc)
