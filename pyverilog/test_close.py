@@ -6,16 +6,16 @@ def test_scalar_close():
     sim = pyverilator.PyVerilator.build("close_to_zero.v")
     num = int(2 ** 10)
     sim.io.num = num
-    close = bool(sim.io.close)
+    close = bool(sim.io.close.value)
     assert close
     sim.io.num = -num
-    close = bool(sim.io.close)
+    close = bool(sim.io.close.value)
     assert close
     sim.io.num = num + 1
-    close = bool(sim.io.close)
+    close = bool(sim.io.close.value)
     assert not close
     sim.io.num = -num - 1
-    close = bool(sim.io.close)
+    close = bool(sim.io.close.value)
     assert not close
 
 
@@ -25,5 +25,5 @@ def test_vec_close():
     sim.io.x = num
     sim.io.y = num
     sim.io.z = num
-    allclose = bool(sim.io.close)
+    allclose = bool(sim.io.close.value)
     assert allclose
