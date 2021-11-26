@@ -8,13 +8,13 @@ module sqrt
         output reg [WIDTH-1:0] out
     );
 
-    reg[WIDTH/2 - 1: 0] result;
+    reg[WIDTH - 1: 0] result;
 
     square_root #(WIDTH) root(.Clock(clk), 
                             .reset(rst), 
                             .num_in(num_in),
                             .done(done),
-                            .sq_root(result));
+                            .sq_root(result[WIDTH/2 - 1: 0]));
     
     always @* 
     begin

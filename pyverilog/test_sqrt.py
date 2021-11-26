@@ -2,7 +2,7 @@ import pyverilator
 import numpy as np
 
 
-def run_square_root():
+def test_square_root():
     # fix point: 2 bit for signed integer part, 30 bit for fractional part
     input_width = 32
     int_bit_width = 2
@@ -36,7 +36,7 @@ def run_square_root():
     print(f"Used {cycle_count} cycles")
 
 
-def run_sqrt():
+def test_sqrt():
     # fix point: 2 bit for signed integer part, 30 bit for fractional part
     input_width = 32
     int_bit_width = 2
@@ -67,8 +67,3 @@ def run_sqrt():
     print(f"Output sqrt of {input_frac} = {output_frac}")
     print(f"Expected = {np.sqrt(input_frac)}")
     print(f"Used {cycle_count} cycles")
-
-
-if __name__ == "__main__":
-    # run_square_root()
-    run_sqrt()
