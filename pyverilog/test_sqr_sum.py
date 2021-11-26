@@ -38,3 +38,24 @@ def test_sqr_sum():
     sum_float = round(sum_float, 6)
     expected = round(expected, 6)
     assert sum_float == expected
+
+
+def test_sqr_sum_v_length_ge_1():
+    sim = pyverilator.PyVerilator.build("sqr_sum.v")
+    for i in range(10):
+        v = np.random.randn(3)
+        v /= np.sqrt((v ** 2).sum())
+        v *= np.sqrt(np.random.rand(1) + 1.0)  # speed will be [1, 2]
+        v_fix_point = to_fix_point_int(v)
+        print(f"v = {v}")
+        sim.io.x = v_fix_point[0]
+        sim.io.y = v_fix_point[1]
+        sim.io.z = v_fix_point[2]
+        sum_int = sim.io.sum.value
+        sum_float = to_float(sum_int)
+        print(f"output = {sum_float}")
+        expected = (v ** 2).sum()
+        print(f"expected = {expected}")
+        sum_float = round(sum_float, 6)
+        expected = round(expected, 6)
+        assert sum_float == expected
