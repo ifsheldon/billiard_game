@@ -1,26 +1,13 @@
+import os
+
 import numpy as np
 import pyverilator
 
-# fix point: 2 bit for signed integer part, 30 bit for fractional part
-input_width = 32
-int_bit_width = 2
-frac_bit_width = input_width - int_bit_width
-frac_to_int_multiplier = 2 ** frac_bit_width
-int_to_frac_multiplier = 2 ** (-frac_bit_width)
-
-
-def to_fix_point_int(x):
-    x = x * frac_to_int_multiplier
-    x = np.round(x).astype(np.int32)
-    return x
-
-
-def to_float(x):
-    x = x * int_to_frac_multiplier
-    return x
+from . import to_fix_point_int, to_float
 
 
 def test_sqr_sum():
+    os.chdir("./pyverilog")
     sim = pyverilator.PyVerilator.build("sqr_sum.v")
     # speed limit in WC is 1.0
     v = np.random.randn(3)
@@ -41,6 +28,7 @@ def test_sqr_sum():
 
 
 def test_sqr_sum_v_length_ge_1():
+    os.chdir("./pyverilog")
     sim = pyverilator.PyVerilator.build("sqr_sum.v")
     for i in range(10):
         v = np.random.randn(3)
