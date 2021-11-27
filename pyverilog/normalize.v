@@ -27,17 +27,17 @@ module normalize
                                     .out(length));
 
     close_to_zero #(WIDTH) judge_close_to_0 (length, close_to_0);
+    wire signed [WIDTH - 1:0] _nx;
+    wire signed [WIDTH - 1:0] _ny;
+    wire signed [WIDTH - 1:0] _nz;
 
-    wire signed [WIDTH * 2 - 1:0] shift_x = x << FRAC_WIDTH;
-    wire signed [WIDTH * 2 - 1:0] shift_y = y << FRAC_WIDTH;
-    wire signed [WIDTH * 2 - 1:0] shift_z = z << FRAC_WIDTH;
-    wire signed [WIDTH * 2 - 1:0] x_divide = (shift_x / length) << FRAC_WIDTH;
-    wire signed [WIDTH * 2 - 1:0] y_divide = (shift_y / length) << FRAC_WIDTH;
-    wire signed [WIDTH * 2 - 1:0] z_divide = (shift_z / length) << FRAC_WIDTH;
-
+    fix_point_division #(WIDTH, FRAC_WIDTH) normalize_x (x, length, _nx);
+    fix_point_division #(WIDTH, FRAC_WIDTH) normalize_y (y, length, _ny);
+    fix_point_division #(WIDTH, FRAC_WIDTH) normalize_z (z, length, _nz);
+    
  
-    assign nx = close_to_0? x : (x_divide[2*WIDTH - 1:WIDTH] << SHIFT_BIT);
-    assign ny = close_to_0? y : (y_divide[2*WIDTH - 1:WIDTH] << SHIFT_BIT);
-    assign nz = close_to_0? z : (z_divide[2*WIDTH - 1:WIDTH] << SHIFT_BIT);
+    assign nx = close_to_0? x : _nx;
+    assign ny = close_to_0? y : _ny;
+    assign nz = close_to_0? z : _nz;
 
 endmodule
