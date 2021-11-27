@@ -5,21 +5,15 @@ module sqr_sum
         input signed [N-1: 0] x,
         input signed [N-1: 0] y,
         input signed [N-1: 0] z,
-        output reg signed [N-1: 0] sum
+        output signed [N-1: 0] sum
     );
     parameter INT_WIDTH = N - FRAC_WIDTH;
     parameter SHIFT_BIT = INT_WIDTH * INT_WIDTH - INT_WIDTH;
 
-    reg signed [2*N - 1: 0] x_sqr;
-    reg signed [2*N - 1: 0] y_sqr;
-    reg signed [2*N - 1: 0] z_sqr;
-
-    always @* 
-    begin
-        x_sqr = x * x;
-        y_sqr = y * y;
-        z_sqr = z * z;
-        sum = (x_sqr[2*N - 1:N] + y_sqr[2*N - 1:N] + z_sqr[2*N - 1:N]) << SHIFT_BIT;
-    end
+    wire signed [2*N - 1: 0] x_sqr = x * x;
+    wire signed [2*N - 1: 0] y_sqr = y * y;
+    wire signed [2*N - 1: 0] z_sqr = z * z;
+    wire signed [2*N - 1: 0] _sum = x_sqr + y_sqr + z_sqr;
+    assign sum = _sum[2*N - 1:N] << SHIFT_BIT;
 
 endmodule
