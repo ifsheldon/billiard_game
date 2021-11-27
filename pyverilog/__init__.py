@@ -15,5 +15,5 @@ def to_fix_point_int(x):
 
 
 def to_float(x):
-    x = x * INT_TO_FRAC_MULTIPLIER
+    x = np.int32(x) * INT_TO_FRAC_MULTIPLIER
     return x
