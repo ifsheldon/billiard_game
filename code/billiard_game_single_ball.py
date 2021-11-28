@@ -3,6 +3,8 @@ import numpy as np
 
 
 def rectify_positions_and_velocities(bound_x_low, bound_x_high, bound_y_low, bound_y_high, positions, velocities):
+    # Corresponding module: rectify_p_v
+    # Notice: Not tested in Python
     # positions: (num, 2)
     # velocities: (num, 2)
     original_p_shape = positions.shape

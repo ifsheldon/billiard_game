@@ -6,6 +6,7 @@ EPS = 1e-5
 
 
 def normalize_vector(vector):
+    # Corresponding module: normalize, need sequential code
     length = np.sqrt((vector ** 2).sum())
     if np.isclose(length, 0.):
         return vector, length
@@ -14,6 +15,8 @@ def normalize_vector(vector):
 
 
 def calc_next_pos_and_velocity(pos_wc, velocity_wc, delta_t, drag_coefficient, g):
+    # Corresponding verilog module: calc_next_p_and_v, the friction_coeff in calc_next_p_and_v should be drag_coefficient * g
+    # Notice: Not tested in Python
     speed = np.sqrt((velocity_wc ** 2).sum())  # can use normalize_vector instead
     if np.isclose(speed, 0.0):
         next_pos_wc = pos_wc
@@ -30,6 +33,8 @@ def calc_next_pos_and_velocity(pos_wc, velocity_wc, delta_t, drag_coefficient, g
 
 
 def two_ball_collides(ball1_pos, ball2_pos, radius):
+    # Corresponding verilog module: ball_collision_detect
+    # Notice: Not tested in Python
     diff = ball1_pos - ball2_pos
     return (diff ** 2).sum() < (2 * radius) ** 2
 
@@ -38,6 +43,8 @@ def rectify_positions_in_collision(ball1_pos, ball2_pos, radius):
     """
     Avoid multiple fake collision when both ball have overlap before collision and low speed after collision
     """
+    # Corresponding module: rectify_p_in_collision
+    # Notice: Not tested in Python
     collide_direction, length = normalize_vector(ball1_pos - ball2_pos)
     diff = 2 * radius - length + EPS
     rectified_ball1_pos = ball1_pos + diff / 2. * collide_direction
@@ -46,6 +53,8 @@ def rectify_positions_in_collision(ball1_pos, ball2_pos, radius):
 
 
 def calc_after_collision_velocity(ball1_pos, ball2_pos, ball1_velocity, ball2_velocity):
+    # Corresponding module: calc_after_collision_v
+    # Notice: Not tested in Python
     # position and velocity of local frame origin w.r.t world coordinate
     local_frame_origin_wc = ball1_pos
     local_frame_velocity_wc = ball1_velocity
@@ -65,7 +74,8 @@ def calc_after_collision_velocity(ball1_pos, ball2_pos, ball1_velocity, ball2_ve
     ball2_v_lc_dir_after_collision, _ = normalize_vector(ball2_v_lc_dir_after_collision_3D[:2])
 
     transformation_matrix = np.stack([ball1_v_lc_dir_after_collision, ball2_v_lc_dir_after_collision], axis=0)
-    speeds_after_collision = transformation_matrix @ (ball1_v_lc + ball2_v_lc).reshape(2, 1)
+    speeds_after_collision = transformation_matrix @ (ball1_v_lc + ball2_v_lc).reshape(2,
+                                                                                       1)  # use module mv.v for matrix vector multiplication
     speeds_after_collision = speeds_after_collision.squeeze()
     ball1_v_lc_after_collision = ball1_v_lc_dir_after_collision * speeds_after_collision[0]
     ball2_v_lc_after_collision = ball2_v_lc_dir_after_collision * speeds_after_collision[1]

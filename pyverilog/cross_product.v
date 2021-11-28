@@ -1,3 +1,4 @@
+// Corresponding to np.cross
 module cross_product
     #(parameter N = 32, FRAC_WIDTH = 30)
     (

@@ -1,3 +1,4 @@
+// Corresponding to two_ball_collides()
 module ball_collision_detect
     #(parameter N = 32)
     (
