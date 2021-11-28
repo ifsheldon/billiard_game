@@ -16,7 +16,6 @@ def normalize_vector(vector):
 
 def calc_next_pos_and_velocity(pos_wc, velocity_wc, delta_t, drag_coefficient, g):
     # Corresponding verilog module: calc_next_p_and_v, the friction_coeff in calc_next_p_and_v should be drag_coefficient * g
-    # Notice: Not tested in Python
     speed = np.sqrt((velocity_wc ** 2).sum())  # can use normalize_vector instead
     if np.isclose(speed, 0.0):
         next_pos_wc = pos_wc
