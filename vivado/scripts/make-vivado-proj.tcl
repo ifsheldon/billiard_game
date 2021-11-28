@@ -24,6 +24,12 @@ add_files -norecurse "./verilog_srcs/ballsprite.txt"
 # adding constraints file
 add_files -fileset constrs_1 -norecurse "./constraints/game.xdc"
 
+# add test benches
+import_files -fileset sim_1 -norecurse "./verilog_tb/testbench.v"
+set_property top top_tb [get_filesets sim_1]
+set_property top_lib xil_defaultlib [get_filesets sim_1]
+update_compile_order -fileset sim_1
+
 
 # adding and synthesizing the clock
 create_ip -name clk_wiz -vendor xilinx.com -library ip -version 6.0 -module_name clk_wiz_0

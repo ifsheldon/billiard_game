@@ -16,7 +16,7 @@ BLUE = 0x0000FF
 # sc for screen space [0.0, 1.0]^2
 
 # Constant parameters
-RESOLUTION = (1280, 800)
+RESOLUTION = (1230, 750)
 RATIO = RESOLUTION[0] / RESOLUTION[1]  # x/y
 FPS = 60
 CUE_BALL_IDX = 0
@@ -107,6 +107,7 @@ if __name__ == "__main__":
         gui.clear(GREEN)
         hit_ball = gui.get_event(ti.GUI.PRESS) and gui.is_pressed("a")
         cue_ball_pos_sc = ball_pos_wc[CUE_BALL_IDX] * wc_to_sc_multiplier
+        
         if np.allclose((ball_velocities_wc ** 2).sum(-1), 0., rtol=0.001, atol=0.001) and ball_visible[CUE_BALL_IDX]:
             rod_dir_sc, length = normalize_vector(gui.get_cursor_pos() - cue_ball_pos_sc)
             rod_line = rod_dir_sc * min(STICK_LENGTH_SC, length)
