@@ -37,6 +37,7 @@ y_end_wc = 1.0
 
 
 def score(hole_center_positions, ball_position):
+    # Don't care now
     diff = hole_center_positions - ball_position.reshape(1, 2)
     square_dist = (diff ** 2).sum(axis=-1)
     radii_square_sum = (0.8 * ball_radius_wc + hole_radius_wc) ** 2
@@ -44,6 +45,7 @@ def score(hole_center_positions, ball_position):
 
 
 def place_balls_wc(span_wc, offset_wc):
+    # No need now
     ball_pos_wc = np.zeros((num_balls, 2))
     for i in range(num_balls):
         ball_i_pos_wc = np.random.rand(2) * span_wc + offset_wc
@@ -96,6 +98,7 @@ if __name__ == "__main__":
         [x_end_wc, y_begin_wc],
         [x_begin_wc, y_end_wc]
     ])
+    # a convenient partial function of rectify_positions_and_velocities
     rectify_pv = partial(rectify_positions_and_velocities,
                          virtual_bound_x[0], virtual_bound_x[1],
                          virtual_bound_y[0], virtual_bound_y[1])
@@ -107,19 +110,23 @@ if __name__ == "__main__":
         gui.clear(GREEN)
         hit_ball = gui.get_event(ti.GUI.PRESS) and gui.is_pressed("a")
         cue_ball_pos_sc = ball_pos_wc[CUE_BALL_IDX] * wc_to_sc_multiplier
-        
+        # the current setting is only when all balls are stationary, the mouse is available
         if np.allclose((ball_velocities_wc ** 2).sum(-1), 0., rtol=0.001, atol=0.001) and ball_visible[CUE_BALL_IDX]:
             rod_dir_sc, length = normalize_vector(gui.get_cursor_pos() - cue_ball_pos_sc)
             rod_line = rod_dir_sc * min(STICK_LENGTH_SC, length)
             gui.line(cue_ball_pos_sc, cue_ball_pos_sc + rod_line, radius=2)
             if hit_ball:
-                ball_velocities_wc[CUE_BALL_IDX] = (rod_dir_sc * sc_to_wc_multiplier) * CUE_BALL_MAX_SPEED_WC \
-                                                   * (min(STICK_LENGTH_SC, length) / STICK_LENGTH_SC)
-        for i in range(num_balls):
+                ball_velocities_wc[CUE_BALL_IDX] = (rod_dir_sc * sc_to_wc_multiplier) \
+                                                   * CUE_BALL_MAX_SPEED_WC * (min(STICK_LENGTH_SC,
+                                                                                  length) / STICK_LENGTH_SC)  # modify the speed with a multiplier dependent on the distance between mouse and the cue ball
+
+        for i in range(num_balls):  # for each ball, if score() returns True, set this ball invisible
+            # Not care now
             if score(hole_center_positions_wc, ball_pos_wc[i]):
                 ball_visible[i] = False
                 ball_velocities_wc[i] = 0.
 
+        # No need to care about this in verilog
         gui.lines(begin=boundary_begin_wc, end=boundary_end_wc, radius=2)
         gui.circles(ball_pos_wc[ball_visible] * wc_to_sc_multiplier.reshape(1, 2),
                     radius=BALL_PIXEL_RADIUS,
@@ -128,7 +135,7 @@ if __name__ == "__main__":
         gui.circles(hole_center_positions_sc, radius=HOLE_PIXEL_RADIUS, color=0)
         gui.show()
 
-        for i in range(num_balls):
+        for i in range(num_balls):  # unroll this loop for the two ball case
             if not ball_visible[i]:
                 continue
             next_pos_wc, next_velocity_wc = calc_next_pos_and_velocity(ball_pos_wc[i], ball_velocities_wc[i],
@@ -137,7 +144,7 @@ if __name__ == "__main__":
             ball_pos_wc[i] = next_pos_wc
             ball_velocities_wc[i] = next_velocity_wc
 
-        for ball_i, ball_j in ball_pairs:
+        for ball_i, ball_j in ball_pairs:  # only one iteration for the two ball case, since we have only one pair
             if not ball_visible[ball_i] or not ball_visible[ball_j]:
                 continue
             ball_i_pos_wc = ball_pos_wc[ball_i]

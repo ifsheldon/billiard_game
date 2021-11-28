@@ -1,3 +1,4 @@
+// convert [0.0, 1.6] fix points to [0, 1280]
 module wc_to_sc
     #(parameter WIDTH = 32)
     (

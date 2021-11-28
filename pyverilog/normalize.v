@@ -7,7 +7,7 @@ module normalize
         input signed [WIDTH-1:0] y,
         input signed [WIDTH-1:0] z,
         output done,
-        output signed [WIDTH-1:0] length,
+        output signed [WIDTH-1:0] length, // the original length
         output signed [WIDTH-1:0] nx,
         output signed [WIDTH-1:0] ny,
         output signed [WIDTH-1:0] nz,

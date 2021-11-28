@@ -1,3 +1,4 @@
+// Convert ints [0, 1280] to [0.0, 1.6] fix point representations
 module sc_to_wc
     #(parameter WIDTH = 32, FRAC_WIDTH = 30)
     (

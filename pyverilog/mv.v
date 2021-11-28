@@ -1,3 +1,4 @@
+// matrix vector multiplication
 module mv
     #(parameter WIDTH = 32, FRAC_WIDTH = 30)
     (

@@ -1,4 +1,4 @@
-// only valid for fix point < 1.0 which is our case
+// sum = x^2 + y^2 + z^2
 module sqr_sum
     #(parameter N= 32, FRAC_WIDTH = 30)
     (

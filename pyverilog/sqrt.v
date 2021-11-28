@@ -1,3 +1,4 @@
+// fix point square root
 module sqrt
     #(parameter WIDTH = 32, FRAC_WIDTH = 30)
     (
