@@ -42,7 +42,6 @@ def rectify_positions_in_collision(ball1_pos, ball2_pos, radius):
     Avoid multiple fake collision when both ball have overlap before collision and low speed after collision
     """
     # Corresponding module: rectify_p_in_collision
-    # Notice: Not tested in Python
     collide_direction, length = normalize_vector(ball1_pos - ball2_pos)
     diff = 2 * radius - length + EPS
     rectified_ball1_pos = ball1_pos + diff / 2. * collide_direction
