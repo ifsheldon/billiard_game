@@ -26,7 +26,7 @@ G = 9.8
 CUE_BALL_MAX_SPEED_WC = 1.0
 BALL_PIXEL_RADIUS = 10
 HOLE_PIXEL_RADIUS = 15
-num_balls = 2
+num_balls = 10
 # Derived parameters
 ball_radius_wc = BALL_PIXEL_RADIUS / RESOLUTION[1]
 hole_radius_wc = HOLE_PIXEL_RADIUS / RESOLUTION[1]
@@ -58,6 +58,7 @@ def place_balls_wc(span_wc, offset_wc):
 
 if __name__ == "__main__":
     ti.init(ti.cpu)
+    print("Press A to kick the cue ball")
 
     wc_to_sc_multiplier = np.array([1 / RATIO, 1])  # transform to [0,1]^ screen space
     sc_to_wc_multiplier = np.array([RATIO, 1])

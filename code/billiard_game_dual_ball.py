@@ -133,7 +133,8 @@ if __name__ == "__main__":
                                                                                  virtual_bound_y[0], virtual_bound_y[1],
                                                                                  cue_ball_pos_wc,
                                                                                  cue_ball_velocity_wc)
-        ball_pos_wc, ball_velocity_wc = calc_next_pos_and_velocity(ball_pos_wc, ball_velocity_wc, delta_t)
+        ball_pos_wc, ball_velocity_wc = calc_next_pos_and_velocity(ball_pos_wc, ball_velocity_wc, delta_t,
+                                                                   drag_coefficient, g)
         ball_pos_wc, ball_velocity_wc = rectify_positions_and_velocities(virtual_bound_x[0], virtual_bound_x[1],
                                                                          virtual_bound_y[0], virtual_bound_y[1],
                                                                          ball_pos_wc, ball_velocity_wc)
