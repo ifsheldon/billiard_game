@@ -31,8 +31,8 @@ module calc_after_collision_v
     // lc for local coordinate
     wire signed [WIDTH-1:0] ball2_v_x_lc = v1_x - local_frame_velocity_x_wc;
     wire signed [WIDTH-1:0] ball2_v_y_lc = v1_y - local_frame_velocity_y_wc;
-    wire signed [WIDTH-1:0] ball2_pos_x_lc = v1_x - local_frame_origin_x_wc;
-    wire signed [WIDTH-1:0] ball2_pos_y_lc = v1_y - local_frame_origin_y_wc;
+    wire signed [WIDTH-1:0] ball2_pos_x_lc = x1 - local_frame_origin_x_wc;
+    wire signed [WIDTH-1:0] ball2_pos_y_lc = y1 - local_frame_origin_y_wc;
 
     // reg signed [WIDTH-1:0] ball1_v_x_lc = ZERO;
     // reg signed [WIDTH-1:0] ball1_v_y_lc = ZERO;
