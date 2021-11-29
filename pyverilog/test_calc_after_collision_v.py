@@ -86,8 +86,6 @@ def test_calc_after_collision_v():
                                                                          ball_pos_wc, ball_velocity_wc)
         if two_ball_collides(cue_ball_pos_wc, ball_pos_wc, ball_radius_wc):
             cue_ball_pos_wc, ball_pos_wc = rectify_positions_in_collision(cue_ball_pos_wc, ball_pos_wc, ball_radius_wc)
-
-            # FIXME: have problem
             old_cue_ball_velocity_wc, old_ball_velocity_wc = cue_ball_velocity_wc, ball_velocity_wc
             cue_ball_velocity_wc, ball_velocity_wc = calc_after_collision_velocity_test(sim, cue_ball_pos_wc,
                                                                                         ball_pos_wc,
