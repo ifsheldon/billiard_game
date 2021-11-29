@@ -58,6 +58,7 @@ def place_balls_wc(span_wc, offset_wc):
 
 if __name__ == "__main__":
     ti.init(ti.cpu)
+    print("Press A to kick the cue ball")
 
     wc_to_sc_multiplier = np.array([1 / RATIO, 1])  # transform to [0,1]^ screen space
     sc_to_wc_multiplier = np.array([RATIO, 1])
