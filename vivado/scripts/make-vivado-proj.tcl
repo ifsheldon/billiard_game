@@ -13,6 +13,19 @@ add_files -norecurse "./verilog_srcs/game_cpu.v"
 add_files -norecurse "./verilog_srcs/sevenseg.v"
 add_files -norecurse "./verilog_srcs/render_engine.v"
 
+# adding math files
+add_files -norecurse "../pyverilog/sc_to_wc.v"
+add_files -norecurse "../pyverilog/wc_to_sc.v"
+add_files -norecurse "../pyverilog/rectify_p_v.v"
+add_files -norecurse "../pyverilog/calc_next_p_and_v.v"
+add_files -norecurse "../pyverilog/close_to_zero.v"
+add_files -norecurse "../pyverilog/fix_point_multiply.v"
+add_files -norecurse "../pyverilog/fix_point_division.v"
+add_files -norecurse "../pyverilog/normalize.v"
+add_files -norecurse "../pyverilog/sqr_sum.v"
+add_files -norecurse "../pyverilog/sqrt.v"
+add_files -norecurse "../pyverilog/square_root.v"
+
 # add vhdl files
 add_files -norecurse "./vhdl_srcs/top.vhd"
 add_files -norecurse "./vhdl_srcs/MouseCtl.vhd"

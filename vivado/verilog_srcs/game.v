@@ -31,9 +31,11 @@ module game(
     wire cue_ball_disp, red_ball1_disp;
     
     // ------------------------ Connecting modules ----------------------
-    game_cpu Inst_game_cpu (
+    game_cpu #(32, 30)
+             Inst_game_cpu (
                             // inputs
                             .clk(clk),
+                            .slow_clk(slow_clk),
                             .rst(rst),
                             
                             .left_click(left_click),
