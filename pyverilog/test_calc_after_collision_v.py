@@ -98,5 +98,5 @@ def test_calc_after_collision_v():
                                                                                            old_cue_ball_velocity_wc,
                                                                                            old_ball_velocity_wc)
 
-            assert np.allclose(cue_ball_velocity_wc_ref, cue_ball_velocity_wc)
-            assert np.allclose(ball_velocity_wc_ref, ball_velocity_wc)
+            assert np.allclose(cue_ball_velocity_wc_ref, cue_ball_velocity_wc, atol=0.001)
+            assert np.allclose(ball_velocity_wc_ref, ball_velocity_wc, atol=0.001)

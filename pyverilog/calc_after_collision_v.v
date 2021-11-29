@@ -64,7 +64,7 @@ module calc_after_collision_v
     wire signed [WIDTH-1:0] speed_after_collision1;
     mv #(WIDTH, FRAC_WIDTH) calc_speeds_after_collision (
         .x00(ball1_v_lc_dir_x_after_collision), .x01(ball1_v_lc_dir_y_after_collision),
-        .x10(ball2_v_lc_dir_x_after_collision), .x11(ball2_v_lc_dir_x_after_collision),
+        .x10(ball2_v_lc_dir_x_after_collision), .x11(ball2_v_lc_dir_y_after_collision),
         .vx(ball2_v_x_lc), .vy(ball2_v_y_lc),
         .ox(speed_after_collision0), .oy(speed_after_collision1)
     );
