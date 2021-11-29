@@ -7,7 +7,7 @@ all: make_proj synth_proj prog_device
 
 master: clean_all all prog_device
 
-make_proj:
+make_proj: clean_all
 	vivado -mode batch -notrace -source "./scripts/make-vivado-proj.tcl"
 
 open_proj:
