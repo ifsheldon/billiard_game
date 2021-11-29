@@ -26,7 +26,7 @@ G = 9.8
 CUE_BALL_MAX_SPEED_WC = 1.0
 BALL_PIXEL_RADIUS = 10
 HOLE_PIXEL_RADIUS = 15
-num_balls = 2
+num_balls = 1
 # Derived parameters
 ball_radius_wc = BALL_PIXEL_RADIUS / RESOLUTION[1]
 hole_radius_wc = HOLE_PIXEL_RADIUS / RESOLUTION[1]
@@ -119,12 +119,11 @@ if __name__ == "__main__":
                 ball_velocities_wc[CUE_BALL_IDX] = (rod_dir_sc * sc_to_wc_multiplier) \
                                                    * CUE_BALL_MAX_SPEED_WC * (min(STICK_LENGTH_SC,
                                                                                   length) / STICK_LENGTH_SC)  # modify the speed with a multiplier dependent on the distance between mouse and the cue ball
-
-        for i in range(num_balls):  # for each ball, if score() returns True, set this ball invisible
-            # Not care now
-            if score(hole_center_positions_wc, ball_pos_wc[i]):
-                ball_visible[i] = False
-                ball_velocities_wc[i] = 0.
+        # for i in range(num_balls):  # for each ball, if score() returns True, set this ball invisible
+        #     # Not care now
+        #     if score(hole_center_positions_wc, ball_pos_wc[i]):
+        #         ball_visible[i] = False
+        #         ball_velocities_wc[i] = 0.
 
         # No need to care about this in verilog
         gui.lines(begin=boundary_begin_wc, end=boundary_end_wc, radius=2)

@@ -25,6 +25,14 @@ add_files -norecurse "../pyverilog/normalize.v"
 add_files -norecurse "../pyverilog/sqr_sum.v"
 add_files -norecurse "../pyverilog/sqrt.v"
 add_files -norecurse "../pyverilog/square_root.v"
+add_files -norecurse "../pyverilog/ball_collision_detect.v"
+add_files -norecurse "../pyverilog/rectify_p_in_collision.v"
+add_files -norecurse "../pyverilog/calc_after_collision_v.v"
+add_files -norecurse "../pyverilog/cross_product.v"
+add_files -norecurse "../pyverilog/mv.v"
+add_files -norecurse "../pyverilog/dot_product.v"
+
+
 
 # add vhdl files
 add_files -norecurse "./vhdl_srcs/top.vhd"

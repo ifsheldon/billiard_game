@@ -6,7 +6,7 @@ module close_to_zero
     );
     // TOL: tolerance - number of digits, if - 2^TOL <= num <= 2^TOL, return 1, else return 0
 
-    reg signed [WIDTH-1:0] tolerance = 1'b1 << TOL;
-    assign close = num <= tolerance & num >= -tolerance;
+//    reg signed [WIDTH-1:0] tolerance = 32'b1 << TOL;
+    assign close = (num > -32'd1024 && num < 32'd1024) ? 1'b1 : 1'b0;
 
 endmodule

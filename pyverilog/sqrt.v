@@ -5,11 +5,11 @@ module sqrt
         input clk,
         input rst,
         input [WIDTH-1:0] num_in,
-        output reg done,
+        output done,
         output reg [WIDTH-1:0] out
     );
 
-    reg[WIDTH - 1: 0] result;
+    wire [WIDTH - 1: 0] result;
 
     square_root #(WIDTH) root(.Clock(clk), 
                             .reset(rst), 
