@@ -9,11 +9,43 @@ module game_cpu
         
         output [10:0] cue_ball_x,  red_ball1_x,
         output [9:0]  cue_ball_y,  red_ball1_y,
-        output   cue_ball_disp, red_ball1_disp
+        output   cue_ball_disp, red_ball1_disp,
+        output [11:0] score, shots
     );
     
     reg [11:0] cue_ball_x_reg, cue_ball_y_reg = {12'd300, 12'd374};
     reg [11:0] red_ball1_x_reg, red_ball1_y_reg = {12'd870, 12'd374};
+
+    // ----------------------------- Display Conditions ---------------------------------
+    reg cb_disp, rb_disp = {1'b1, 1'b1};
+    always @(posedge clk_mid) begin
+        if (rst)
+            cb_disp <= 1'b1;
+        else if (cue_ball_x_reg < 12'd25 && cue_ball_y_reg < 12'd25)
+            cb_disp <= 1'b0;
+        else if (cue_ball_x_reg > 12'd1204 && cue_ball_y_reg < 12'd25)
+            cb_disp <= 1'b0;
+        else if (cue_ball_x_reg < 12'd25 && cue_ball_y_reg > 12'd724)
+            cb_disp <= 1'b0;
+        else if (cue_ball_x_reg > 12'd1204 && cue_ball_y_reg > 12'd724)
+            cb_disp <= 1'b0;
+    end
+
+    always @(posedge clk_mid) begin
+        if (rst)
+            rb_disp <= 1'b1;
+        else if (red_ball1_x_reg < 12'd25 && red_ball1_y_reg < 12'd25)
+            rb_disp <= 1'b0;
+        else if (red_ball1_x_reg > 12'd1204 && red_ball1_y_reg < 12'd25)
+            rb_disp <= 1'b0;
+        else if (red_ball1_x_reg < 12'd25 && red_ball1_y_reg > 12'd724)
+            rb_disp <= 1'b0;
+        else if (red_ball1_x_reg > 12'd1204 && red_ball1_y_reg > 12'd724)
+            rb_disp <= 1'b0;
+    end
+
+    assign {shots, score} = {12'd0, 12'd0};
+
     // ----------------------------- Registering the pointer position ---------------------------------
     reg [11:0] pointer_x_reg, pointer_y_reg;  
     always @(posedge clk) begin
@@ -117,7 +149,7 @@ module game_cpu
                                                               red_ball_x_ac, red_ball_y_ac);
     reg signed [WIDTH-1:0] cb_x_ac, cb_y_ac, rb_x_ac, rb_y_ac;
     always @(posedge clk_mid) begin
-        if (ball_collides) begin
+        if (ball_collides && cb_disp && rb_disp) begin
             cb_x_ac <= cue_ball_x_ac;
             cb_y_ac <= cue_ball_y_ac;
             rb_x_ac <= red_ball_x_ac;
@@ -141,7 +173,7 @@ module game_cpu
 
      reg signed [WIDTH-1:0] cb_vx_ac, cb_vy_ac, rb_vx_ac, rb_vy_ac;
      always @(posedge clk_mid) begin
-         if (ball_collides) begin
+         if (ball_collides && cb_disp && rb_disp) begin
              cb_vx_ac <= nv_x_c;
              cb_vy_ac <= nv_y_c;
              rb_vx_ac <= nv_x_r;
@@ -209,7 +241,7 @@ module game_cpu
     
     assign      {  cue_ball_x,  cue_ball_y } = {  cue_ball_x_reg[10:0],  cue_ball_y_reg[9:0] };
     assign      { red_ball1_x, red_ball1_y } = { red_ball1_x_reg[10:0], red_ball1_y_reg[9:0] };
-    assign { cue_ball_disp, red_ball1_disp } = { 1'b1, 1'b1 };
+    assign { cue_ball_disp, red_ball1_disp } = { cb_disp, rb_disp };
     
     
 endmodule

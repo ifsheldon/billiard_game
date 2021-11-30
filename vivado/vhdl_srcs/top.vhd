@@ -106,7 +106,11 @@ PORT (
     vsync    : out std_logic;
     pix_r    : out std_logic_vector(3 downto 0);
     pix_g    : out std_logic_vector(3 downto 0);
-    pix_b    : out std_logic_vector(3 downto 0)    
+    pix_b    : out std_logic_vector(3 downto 0);    
+
+    score    : in std_logic_vector(11 downto 0);
+    shots    : in std_logic_vector(11 downto 0)    
+
 );
 END COMPONENT;
 
@@ -117,7 +121,8 @@ signal left_click : std_logic;
 signal right_click: std_logic;
 signal MOUSE_X_POS: std_logic_vector (11 downto 0);
 signal MOUSE_Y_POS: std_logic_vector (11 downto 0);
-
+signal score      : std_logic_vector (11 downto 0);
+signal shots      : std_logic_vector (11 downto 0);
 
 -- ===============================================  ARCH BEHAV =======================================
 
@@ -166,8 +171,8 @@ begin
    Inst_sSeg: sSeg
    port map(
         clk     => clk_83MHz,
-        numx    => MOUSE_X_POS,
-        numy    => MOUSE_Y_POS,
+        numx    => shots,
+        numy    => score,
         a       => a,
         b       => b,
         c       => c,
@@ -198,7 +203,9 @@ begin
         vsync       => vsync,
         pix_r       => pix_r,
         pix_g       => pix_g,
-        pix_b       => pix_b
+        pix_b       => pix_b,
+        score       => score,
+        shots       => shots
    );
  
  

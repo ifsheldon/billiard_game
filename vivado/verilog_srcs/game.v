@@ -7,7 +7,9 @@ module game(
     input [11:0] pointer_x, pointer_y,
     
     output [3:0] pix_r, pix_g, pix_b,
-    output hsync, vsync
+    output hsync, vsync,
+    output [11:0] score, shots
+
     );
     
     // --------------------- register pointer position -----------------
@@ -52,11 +54,11 @@ module game(
                             
                             .red_ball1_x(red_ball1_x),
                             .red_ball1_y(red_ball1_y),
-                            .red_ball1_disp(red_ball1_disp)
+                            .red_ball1_disp(red_ball1_disp),
+                            .score(score),
+                            .shots(shots)
                            );
-    
-    
-    
+
     render_engine Inst_render_engine(
                                      // inputs
                                      .clk(clk),

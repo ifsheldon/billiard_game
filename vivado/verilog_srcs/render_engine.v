@@ -33,6 +33,24 @@ module render_engine(
     always @(posedge clk) 
         disp_boundary <= (curr_x_reg <= 11'd10 || curr_x_reg >= 11'd1269 || curr_y_reg <= 10'd10 || curr_y_reg >= 10'd789);
 
+
+    // ---------------------------- pocket display logic --------------------------
+    reg p1_disp, p2_disp, p3_disp, p4_disp;
+    reg [9:0] p1_addr, p2_addr, p3_addr, p4_addr;
+    always @ (posedge clk) begin
+        p1_disp  <= ( curr_x_reg < 11'd35 && curr_y_reg < 10'd35);  
+        p1_addr  <= (curr_y_reg-10'd35)*5'd31 + (curr_x_reg-11'd35);
+
+        p2_disp  <= ( curr_x_reg > 11'd1244 && curr_y_reg < 10'd35);  
+        p2_addr  <= (curr_y_reg-10'd35)*5'd31 + (curr_x_reg-11'd1244);
+
+        p3_disp  <= ( curr_x_reg < 11'd35 && curr_y_reg > 10'd764);  
+        p3_addr  <= (curr_y_reg-10'd764)*5'd31 + (curr_x_reg-11'd35);
+
+        p4_disp  <= ( curr_x_reg > 11'd1244 && curr_y_reg > 10'd764);  
+        p4_addr  <= (curr_y_reg-10'd764)*5'd31 + (curr_x_reg-11'd1244);
+    end
+
     // ---------------------------- pointer display logic --------------------------
     reg [10:0] pointer_x_reg;
     reg  [9:0] pointer_y_reg;
@@ -92,12 +110,29 @@ module render_engine(
                 {r_output, g_output, b_output} <= {4'd8, 4'd8, 4'd8};       
         
         // add cue ball
-        else if (disp_cue_ball && ballsprite[cue_ball_addr])
+        else if (cue_ball_disp && disp_cue_ball && ballsprite[cue_ball_addr])
                 {r_output, g_output, b_output} <= {4'd15, 4'd15, 4'd15};
         
         // add red ball
-        else if (disp_red_ball1 && ballsprite[red_ball1_addr])
+        else if (red_ball1_disp && disp_red_ball1 && ballsprite[red_ball1_addr])
                 {r_output, g_output, b_output} <= {4'd15, 4'd0, 4'd0};        
+        
+        // add p1
+        else if (p1_disp && ballsprite[p1_addr])
+            {r_output, g_output, b_output} <= {4'd10, 4'd5, 4'd0};
+
+        // add p2
+        else if (p2_disp && ballsprite[p2_addr])
+            {r_output, g_output, b_output} <= {4'd10, 4'd5, 4'd0};
+
+        // add p3
+        else if (p3_disp && ballsprite[p3_addr])
+            {r_output, g_output, b_output} <= {4'd10, 4'd5, 4'd0};
+
+        // add p4
+        else if (p4_disp && ballsprite[p4_addr])
+            {r_output, g_output, b_output} <= {4'd10, 4'd5, 4'd0};
+
         else
             {r_output, g_output, b_output} <= {4'd0, 4'd15, 4'd0};    
         
