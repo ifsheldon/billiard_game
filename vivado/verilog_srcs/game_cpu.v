@@ -4,7 +4,7 @@
 module game_cpu
  #(parameter WIDTH = 32, FRAC_WIDTH = 30)
  (
-        input clk, slow_clk, rst, left_click, right_click,
+        input clk, slow_clk, clk_mid, rst, left_click, right_click,
         input [11:0] pointer_x, pointer_y, 
         
         output [10:0] cue_ball_x,  red_ball1_x,
@@ -36,7 +36,7 @@ module game_cpu
     // for cue ball
     wire signed [WIDTH-1:0] p_x_n, p_y_n, v_x_n, v_y_n;
     wire done;
-    calc_next_p_and_v #(WIDTH, FRAC_WIDTH, 10) inst_cnpv(slow_clk, rst, 
+    calc_next_p_and_v #(WIDTH, FRAC_WIDTH, 10) inst_cnpv(clk_mid, rst, 
                                                          cue_ball_x_wc, cue_ball_y_wc, 
                                                          cue_ball_vx_wc, cue_ball_vy_wc,
                                                          $signed(32'd13421773), $signed(32'd105226699), done,
@@ -44,12 +44,10 @@ module game_cpu
 
     reg signed [WIDTH-1:0] p_x_n_reg, p_y_n_reg, v_x_n_reg, v_y_n_reg;
     always @(posedge clk) begin
-        if (done) begin
-            p_x_n_reg <= p_x_n;
-            p_y_n_reg <= p_y_n;
-            v_x_n_reg <= v_x_n;
-            v_y_n_reg <= v_y_n;
-        end
+        p_x_n_reg <= p_x_n;
+        p_y_n_reg <= p_y_n;
+        v_x_n_reg <= v_x_n;
+        v_y_n_reg <= v_y_n;
     end
 
     // for red ball
@@ -60,7 +58,7 @@ module game_cpu
     
     wire signed [WIDTH-1:0] rp_x_n, rp_y_n, rv_x_n, rv_y_n;
     wire rdone;
-    calc_next_p_and_v #(WIDTH, FRAC_WIDTH, 10) inst_rcnpv(slow_clk, rst, 
+    calc_next_p_and_v #(WIDTH, FRAC_WIDTH, 10) inst_rcnpv(clk_mid, rst, 
                                                          red_ball1_x_wc, red_ball1_y_wc, 
                                                          red_ball1_vx_wc, red_ball1_vy_wc,
                                                          $signed(32'd13421773), $signed(32'd105226699), rdone,
@@ -68,12 +66,10 @@ module game_cpu
 
     reg signed [WIDTH-1:0] rp_x_n_reg, rp_y_n_reg, rv_x_n_reg, rv_y_n_reg;
     always @(posedge clk) begin
-        if (rdone) begin
             rp_x_n_reg <= rp_x_n;
             rp_y_n_reg <= rp_y_n;
             rv_x_n_reg <= rv_x_n;
             rv_y_n_reg <= rv_y_n;
-        end
     end
 
     
@@ -115,13 +111,13 @@ module game_cpu
     // ----------------------------- Position in collision ---------------------------------    
     wire done2;
     wire signed [WIDTH-1:0] cue_ball_x_ac, cue_ball_y_ac, red_ball_x_ac, red_ball_y_ac;
-    rectify_p_in_collision #(WIDTH, FRAC_WIDTH, 10) inst_rpic(slow_clk, rst, cb_x_ar, cb_y_ar,
+    rectify_p_in_collision #(WIDTH, FRAC_WIDTH, 10) inst_rpic(clk_mid, rst, cb_x_ar, cb_y_ar,
                                                               rb_x_ar, rb_y_ar, 32'd21474836,
                                                               done2, cue_ball_x_ac, cue_ball_y_ac,
                                                               red_ball_x_ac, red_ball_y_ac);
     reg signed [WIDTH-1:0] cb_x_ac, cb_y_ac, rb_x_ac, rb_y_ac;
-    always @(posedge clk) begin
-        if (ball_collides && done2) begin
+    always @(posedge clk_mid) begin
+        if (ball_collides) begin
             cb_x_ac <= cue_ball_x_ac;
             cb_y_ac <= cue_ball_y_ac;
             rb_x_ac <= red_ball_x_ac;
@@ -136,33 +132,33 @@ module game_cpu
     
     end
    
-     // ----------------------------- Velocity in Collision ---------------------------------
-    wire done3;
-    wire signed [WIDTH-1:0] nv_x_c, nv_y_c, nv_x_r, nv_y_r;
-    calc_after_collision_v #(WIDTH, FRAC_WIDTH) inst_cacv(slow_clk, rst, cb_x_ac, cb_y_ac, cb_vx_ar, cb_vy_ar,
-                                                          rb_x_ac, rb_y_ac, rb_vx_ar, rb_vy_ar,
-                                                          done3, nv_x_c, nv_y_c, nv_x_r, nv_y_r);
+      // ----------------------------- Velocity in Collision ---------------------------------
+     wire done3;
+     wire signed [WIDTH-1:0] nv_x_c, nv_y_c, nv_x_r, nv_y_r;
+     calc_after_collision_v #(WIDTH, FRAC_WIDTH) inst_cacv(clk_mid, rst, cb_x_ac, cb_y_ac, cb_vx_ar, cb_vy_ar,
+                                                           rb_x_ac, rb_y_ac, rb_vx_ar, rb_vy_ar,
+                                                           done3, nv_x_c, nv_y_c, nv_x_r, nv_y_r);
 
-    reg signed [WIDTH-1:0] cb_vx_ac, cb_vy_ac, rb_vx_ac, rb_vy_ac;
-    always @(posedge clk && done3) begin
-        if (ball_collides) begin
-            cb_vx_ac <= nv_x_c;
-            cb_vy_ac <= nv_y_c;
-            rb_vx_ac <= nv_x_r;
-            rb_vy_ac <= nv_y_r;
-        end
-        else begin
-            cb_vx_ac <= cb_vx_ar;
-            cb_vy_ac <= cb_vy_ar;
-            rb_vx_ac <= rb_vx_ar;
-            rb_vy_ac <= rb_vy_ar;
-        end
+     reg signed [WIDTH-1:0] cb_vx_ac, cb_vy_ac, rb_vx_ac, rb_vy_ac;
+     always @(posedge clk_mid) begin
+         if (ball_collides) begin
+             cb_vx_ac <= nv_x_c;
+             cb_vy_ac <= nv_y_c;
+             rb_vx_ac <= nv_x_r;
+             rb_vy_ac <= nv_y_r;
+         end
+         else begin
+             cb_vx_ac <= cb_vx_ar;
+             cb_vy_ac <= cb_vy_ar;
+             rb_vx_ac <= rb_vx_ar;
+             rb_vy_ac <= rb_vy_ar;
+         end
     
-    end    
+     end    
     
    // ----------------------------- Assigning the Vectors ---------------------------------
    // for cue ball 
-    always @(posedge clk) begin
+    always @(posedge slow_clk) begin
         if (rst) begin
             cue_ball_vx_wc  <= 32'd0;
             cue_ball_vy_wc  <= 32'd0;
@@ -182,7 +178,7 @@ module game_cpu
     end
 
     // for red ball
-    always @(posedge clk) begin
+    always @(posedge slow_clk) begin
         if (rst) begin
             red_ball1_vx_wc  <= 32'd0;
             red_ball1_vy_wc  <= 32'd0;

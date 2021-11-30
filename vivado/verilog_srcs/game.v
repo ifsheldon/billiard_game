@@ -19,11 +19,11 @@ module game(
     
     // ---------------------------- 80Hz clock -------------------------
     reg [19:0] clk_count = 20'd0;
-    wire slow_clk;
+    wire slow_clk, clk_mid;
     always@(negedge clk)
         clk_count <= clk_count + 1'b1;
-    assign slow_clk = clk_count[19]; // 80hz clock
-    
+    assign slow_clk = clk_count[19]; // 80Hz clock
+    assign clk_mid = clk_count[15];  // 80*16 Hz
     // ------------------------- connecting wires -----------------------
     wire [3:0] r, g, b;
     wire [10:0] curr_x, cue_ball_x, red_ball1_x;
@@ -36,6 +36,7 @@ module game(
                             // inputs
                             .clk(clk),
                             .slow_clk(slow_clk),
+                            .clk_mid(clk_mid),
                             .rst(rst),
                             
                             .left_click(left_click),

@@ -1,6 +1,3 @@
-
-
-
 create_project billiard_game ./billiard_game -part xc7a100tcsg324-1
 set_property board_part digilentinc.com:nexys-a7-100t:part0:1.0 [current_project]
 update_ip_catalog
@@ -32,8 +29,6 @@ add_files -norecurse "../pyverilog/cross_product.v"
 add_files -norecurse "../pyverilog/mv.v"
 add_files -norecurse "../pyverilog/dot_product.v"
 
-
-
 # add vhdl files
 add_files -norecurse "./vhdl_srcs/top.vhd"
 add_files -norecurse "./vhdl_srcs/MouseCtl.vhd"
@@ -51,6 +46,10 @@ set_property top top_tb [get_filesets sim_1]
 set_property top_lib xil_defaultlib [get_filesets sim_1]
 update_compile_order -fileset sim_1
 
+# set top level module
+update_compile_order -fileset sources_1
+set_property top GAME_TOP [current_fileset]
+update_compile_order -fileset sources_1
 
 # adding and synthesizing the clock
 create_ip -name clk_wiz -vendor xilinx.com -library ip -version 6.0 -module_name clk_wiz_0

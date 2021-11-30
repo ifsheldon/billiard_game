@@ -41,6 +41,7 @@ module calc_after_collision_v
 
     wire signed [WIDTH-1:0] ball1_v_lc_dir_x_after_collision;
     wire signed [WIDTH-1:0] ball1_v_lc_dir_y_after_collision;
+
     normalize #(WIDTH, FRAC_WIDTH) calc_ball1_v_lc_dir_after_collision (.clk(clk), .rst(rst),
                                                                         .x(-ball2_pos_x_lc),
                                                                         .y(-ball2_pos_y_lc),
@@ -48,23 +49,53 @@ module calc_after_collision_v
                                                                         .done(done),
                                                                         .nx(ball1_v_lc_dir_x_after_collision),
                                                                         .ny(ball1_v_lc_dir_y_after_collision));
+    reg signed [WIDTH-1:0] ball1_v_lc_dir_x_after_collision_reg = ZERO;
+    reg signed [WIDTH-1:0] ball1_v_lc_dir_y_after_collision_reg = ZERO;
     
+    always @(posedge clk) begin
+        ball1_v_lc_dir_x_after_collision_reg <= ball1_v_lc_dir_x_after_collision;
+        ball1_v_lc_dir_y_after_collision_reg <= ball1_v_lc_dir_y_after_collision;
+    end
+        
     wire signed [WIDTH-1:0] z_dir_z;
-    cross_product #(WIDTH, FRAC_WIDTH) calc_z_dir_x (.x0(ball2_v_x_lc), .y0(ball2_v_y_lc), .z0(ZERO),
-                                                    .x1(ball1_v_lc_dir_x_after_collision), .y1(ball1_v_lc_dir_y_after_collision), .z1(ZERO),
+    cross_product #(WIDTH, FRAC_WIDTH) calc_z_dir_x (.x0(ball2_v_x_lc), 
+                                                     .y0(ball2_v_y_lc), 
+                                                     .z0(ZERO),
+                                                    
+                                                    .x1(ball1_v_lc_dir_x_after_collision_reg), 
+                                                    .y1(ball1_v_lc_dir_y_after_collision_reg), 
+                                                    .z1(ZERO),
+                                                    
                                                     .z2(z_dir_z));
-    wire signed [WIDTH-1:0] z_direction_z = z_dir_z > 0 ? ONE : -ONE;
-
+    
+    reg signed [WIDTH-1:0] z_direction_z;
+    always @(posedge clk) begin
+        z_direction_z <= z_dir_z > 0 ? ONE : -ONE;
+    end
     wire signed [WIDTH-1:0] ball2_v_lc_dir_x_after_collision;
     wire signed [WIDTH-1:0] ball2_v_lc_dir_y_after_collision;
-    cross_product #(WIDTH, FRAC_WIDTH) calc_ball2_v_lc_dir_y_after_collision(.x0(ball1_v_lc_dir_x_after_collision), .y0(ball1_v_lc_dir_y_after_collision), .z0(ZERO),
-                                                                            .x1(ZERO), .y1(ZERO), .z1(z_direction_z),
-                                                                            .x2(ball2_v_lc_dir_x_after_collision), .y2(ball2_v_lc_dir_y_after_collision));
+    cross_product #(WIDTH, FRAC_WIDTH) calc_ball2_v_lc_dir_y_after_collision(.x0(ball1_v_lc_dir_x_after_collision_reg), 
+                                                                             .y0(ball1_v_lc_dir_y_after_collision_reg), 
+                                                                             .z0(ZERO),
+                                                                             
+                                                                             .x1(ZERO), 
+                                                                             .y1(ZERO), 
+                                                                             .z1(z_direction_z),
+                                                                             
+                                                                             .x2(ball2_v_lc_dir_x_after_collision), 
+                                                                             .y2(ball2_v_lc_dir_y_after_collision));
+    reg signed [WIDTH-1:0] ball2_v_lc_dir_x_after_collision_reg = ZERO;
+    reg signed [WIDTH-1:0] ball2_v_lc_dir_y_after_collision_reg = ZERO;
+    always @(posedge clk) begin
+        ball2_v_lc_dir_x_after_collision_reg <= ball2_v_lc_dir_x_after_collision;
+        ball2_v_lc_dir_y_after_collision_reg <= ball2_v_lc_dir_y_after_collision;
+    end
+
     wire signed [WIDTH-1:0] speed_after_collision0;
     wire signed [WIDTH-1:0] speed_after_collision1;
     mv #(WIDTH, FRAC_WIDTH) calc_speeds_after_collision (
-        .x00(ball1_v_lc_dir_x_after_collision), .x01(ball1_v_lc_dir_y_after_collision),
-        .x10(ball2_v_lc_dir_x_after_collision), .x11(ball2_v_lc_dir_y_after_collision),
+        .x00(ball1_v_lc_dir_x_after_collision_reg), .x01(ball1_v_lc_dir_y_after_collision_reg),
+        .x10(ball2_v_lc_dir_x_after_collision_reg), .x11(ball2_v_lc_dir_y_after_collision_reg),
         .vx(ball2_v_x_lc), .vy(ball2_v_y_lc),
         .ox(speed_after_collision0), .oy(speed_after_collision1)
     );
@@ -76,8 +107,8 @@ module calc_after_collision_v
 
     wire signed [WIDTH-1:0] ball2_v_x_lc_after_collision;
     wire signed [WIDTH-1:0] ball2_v_y_lc_after_collision;
-    fix_point_multiply #(WIDTH, FRAC_WIDTH) calc_ball2_v_x_lc_after_collision (ball2_v_lc_dir_x_after_collision, speed_after_collision1, ball2_v_x_lc_after_collision);
-    fix_point_multiply #(WIDTH, FRAC_WIDTH) calc_ball2_v_y_lc_after_collision (ball2_v_lc_dir_y_after_collision, speed_after_collision1, ball2_v_y_lc_after_collision);
+    fix_point_multiply #(WIDTH, FRAC_WIDTH) calc_ball2_v_x_lc_after_collision (ball2_v_lc_dir_x_after_collision_reg, speed_after_collision1, ball2_v_x_lc_after_collision);
+    fix_point_multiply #(WIDTH, FRAC_WIDTH) calc_ball2_v_y_lc_after_collision (ball2_v_lc_dir_y_after_collision_reg, speed_after_collision1, ball2_v_y_lc_after_collision);
 
     assign new_v0_x = local_frame_velocity_x_wc + ball1_v_x_lc_after_collision;
     assign new_v0_y = local_frame_velocity_y_wc + ball1_v_y_lc_after_collision;
